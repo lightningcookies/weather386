@@ -7,9 +7,21 @@ Welcome to weather386's documentation!
 ======================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Contents:
 
+Module Documentation
+--------------------
+
+.. automodule:: weather386.forecast
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: weather386.history
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Indices and tables
 ==================

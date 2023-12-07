@@ -44,6 +44,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
     <li><a href="#">weather386  documentation</a> &#187;</li>
 
         <li class="nav-item nav-item-this"><a href="">Welcome to weather386’s documentation!</a></li> 
@@ -61,6 +64,44 @@
 <h1>Welcome to weather386’s documentation!<a class="headerlink" href="#welcome-to-weather386-s-documentation" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
+<section id="module-weather386.forecast">
+<span id="module-documentation"></span><h2>Module Documentation<a class="headerlink" href="#module-weather386.forecast" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="weather386.forecast.get_forecast">
+<span class="sig-prename descclassname"><span class="pre">weather386.forecast.</span></span><span class="sig-name descname"><span class="pre">get_forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/weather386/forecast.html#get_forecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#weather386.forecast.get_forecast" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch forecast based on latitude and longitude and return it as a pandas DataFrame.</p>
+<p>Parameters:
+lat (float): Latitude
+long (float): Longitude</p>
+<p>Returns:
+pd.DataFrame: DataFrame containing the fetched data</p>
+</dd></dl>
+
+<dl class="py function" id="module-weather386.history">
+<dt class="sig sig-object py" id="weather386.history.get_history">
+<span class="sig-prename descclassname"><span class="pre">weather386.history.</span></span><span class="sig-name descname"><span class="pre">get_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/weather386/history.html#get_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#weather386.history.get_history" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch historical weather data for a specific location and time period.</p>
+<p>This function retrieves historical weather data, including maximum and minimum temperatures,
+total precipitation, rain and snowfall sums, and maximum wind speeds, from a specified start date
+to the fixed end date of ‘2023-11-19’. The data is fetched from the Open-Meteo API and returned
+as a pandas DataFrame.</p>
+<p>Parameters:
+lat (float): Latitude of the location for which to fetch weather data.
+long (float): Longitude of the location for which to fetch weather data.
+start_date (str): The start date for the historical data retrieval in ‘YYYY-MM-DD’ format.</p>
+<p>Returns:
+pandas.DataFrame: A DataFrame containing the daily weather data for the specified period.</p>
+<blockquote>
+<div><p>The DataFrame includes columns for maximum and minimum temperatures
+(in Fahrenheit), total precipitation (in inches), rain and snowfall sums,
+and maximum wind speeds (in mph).</p>
+</div></blockquote>
+<p>Example:
+&gt;&gt;&gt; df = get_history(39.7392, -104.9903, ‘1950-01-01’)
+&gt;&gt;&gt; df.head()</p>
+</dd></dl>
+
+</section>
 </section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
@@ -80,7 +121,14 @@
         <div class="sphinxsidebarwrapper"><div class="sphinx-toc sphinxlocaltoc">
     <h3><a href="#">Page contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">Welcome to weather386’s documentation!</a></li>
+<li><a class="reference internal" href="#">Welcome to weather386’s documentation!</a><ul>
+<li><a class="reference internal" href="#module-weather386.forecast">Module Documentation</a><ul>
+<li><a class="reference internal" href="#weather386.forecast.get_forecast"><code class="docutils literal notranslate"><span class="pre">get_forecast()</span></code></a></li>
+<li><a class="reference internal" href="#weather386.history.get_history"><code class="docutils literal notranslate"><span class="pre">get_history()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
@@ -131,6 +179,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
     <li><a href="#">weather386  documentation</a> &#187;</li>
 
         <li class="nav-item nav-item-this"><a href="">Welcome to weather386’s documentation!</a></li> 
