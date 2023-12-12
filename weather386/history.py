@@ -32,7 +32,7 @@ def get_history(lat,long,start_date):
     temperature_unit = 'fahrenheit'
     wind_speed_unit = 'mph'
     precipitation_unit = 'inch'
-    timezone = 'America/Denver'
+    timezone = 'GMT'
 
     # Construct URL using f-string
     url = f"https://archive-api.open-meteo.com/v1/archive?latitude={lat}&longitude={long}&start_date={start_date}&end_date={end_date}&daily={daily_parameters}&temperature_unit={temperature_unit}&wind_speed_unit={wind_speed_unit}&precipitation_unit={precipitation_unit}&timezone={timezone}"
@@ -46,3 +46,5 @@ def get_history(lat,long,start_date):
     df = pd.DataFrame(daily_data)
     return df
 
+history_df = get_history(40.76,-111.876,'1950-11-15')
+history_df.to_csv('history_slc.csv')
