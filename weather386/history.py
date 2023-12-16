@@ -4,6 +4,34 @@ import pandas as pd
 from retry_requests import retry
 
 def get_history(latitude, longitude):
+    """
+    Retrieves historical weather data for a specified location using the Open-Meteo API.
+
+    This function queries the Open-Meteo API for historical weather data based on the provided
+    latitude and longitude. It uses a cached and retry-enabled session for the API requests to
+    handle potential network issues and improve performance. The function returns a DataFrame
+    containing hourly weather data over a fixed historical period.
+
+    Parameters:
+    latitude (float): Latitude of the location for which historical weather data is requested.
+    longitude (float): Longitude of the location for which historical weather data is requested.
+
+    Returns:
+    pandas.DataFrame: A DataFrame containing hourly historical weather data for the specified location.
+                      Columns include 'date', 'temperature_2m', 'relative_humidity_2m', 'dew_point_2m',
+                      'precipitation', 'rain', 'snowfall', and 'wind_speed_10m'.
+
+    The function sets up a request session with caching and retry mechanisms, then sends a request
+    to the Open-Meteo API with the specified parameters. The response is processed into a pandas
+    DataFrame, with each column representing a different weather variable. The date column is 
+    timezone-localized to UTC.
+
+    Note:
+    - The historical period for which data is retrieved is currently fixed within the function.
+    - The function assumes the existence of the 'openmeteo_requests' custom module and 
+      'retry_requests' for handling API requests.
+    """
+    
     # Setup the Open-Meteo API client with cache and retry on error
     cache_session = requests_cache.CachedSession('.cache', expire_after=-1)
     retry_session = retry(cache_session, retries=5, backoff_factor=0.2)

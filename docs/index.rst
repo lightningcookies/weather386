@@ -23,6 +23,36 @@ Module Documentation
    :undoc-members:
    :show-inheritance:
 
+.. automodule:: weather386.combined_graph
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: weather386.expand
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: weather386.join_clean
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: weather386.precip_graph
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: weather386.temp_graph
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: weather386.wind_graph
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Indices and tables
 ==================
 

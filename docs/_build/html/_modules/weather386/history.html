@@ -61,57 +61,98 @@
           <div class="body" role="main">
             
   <h1>Source code for weather386.history</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span></span><span class="kn">import</span> <span class="nn">openmeteo_requests</span>
+<span class="kn">import</span> <span class="nn">requests_cache</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">retry_requests</span> <span class="kn">import</span> <span class="n">retry</span>
 
 <div class="viewcode-block" id="get_history">
 <a class="viewcode-back" href="../../index.html#weather386.history.get_history">[docs]</a>
-<span class="k">def</span> <span class="nf">get_history</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span><span class="n">long</span><span class="p">,</span><span class="n">start_date</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_history</span><span class="p">(</span><span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Fetch historical weather data for a specific location and time period.</span>
+<span class="sd">    Retrieves historical weather data for a specified location using the Open-Meteo API.</span>
 
-<span class="sd">    This function retrieves historical weather data, including maximum and minimum temperatures, </span>
-<span class="sd">    total precipitation, rain and snowfall sums, and maximum wind speeds, from a specified start date </span>
-<span class="sd">    to the fixed end date of &#39;2023-11-19&#39;. The data is fetched from the Open-Meteo API and returned </span>
-<span class="sd">    as a pandas DataFrame.</span>
+<span class="sd">    This function queries the Open-Meteo API for historical weather data based on the provided</span>
+<span class="sd">    latitude and longitude. It uses a cached and retry-enabled session for the API requests to</span>
+<span class="sd">    handle potential network issues and improve performance. The function returns a DataFrame</span>
+<span class="sd">    containing hourly weather data over a fixed historical period.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">    lat (float): Latitude of the location for which to fetch weather data.</span>
-<span class="sd">    long (float): Longitude of the location for which to fetch weather data.</span>
-<span class="sd">    start_date (str): The start date for the historical data retrieval in &#39;YYYY-MM-DD&#39; format.</span>
+<span class="sd">    latitude (float): Latitude of the location for which historical weather data is requested.</span>
+<span class="sd">    longitude (float): Longitude of the location for which historical weather data is requested.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">    pandas.DataFrame: A DataFrame containing the daily weather data for the specified period. </span>
-<span class="sd">                      The DataFrame includes columns for maximum and minimum temperatures </span>
-<span class="sd">                      (in Fahrenheit), total precipitation (in inches), rain and snowfall sums,</span>
-<span class="sd">                      and maximum wind speeds (in mph).</span>
+<span class="sd">    pandas.DataFrame: A DataFrame containing hourly historical weather data for the specified location.</span>
+<span class="sd">                      Columns include &#39;date&#39;, &#39;temperature_2m&#39;, &#39;relative_humidity_2m&#39;, &#39;dew_point_2m&#39;,</span>
+<span class="sd">                      &#39;precipitation&#39;, &#39;rain&#39;, &#39;snowfall&#39;, and &#39;wind_speed_10m&#39;.</span>
 
-<span class="sd">    Example:</span>
-<span class="sd">    &gt;&gt;&gt; df = get_history(39.7392, -104.9903, &#39;1950-01-01&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; df.head()</span>
+<span class="sd">    The function sets up a request session with caching and retry mechanisms, then sends a request</span>
+<span class="sd">    to the Open-Meteo API with the specified parameters. The response is processed into a pandas</span>
+<span class="sd">    DataFrame, with each column representing a different weather variable. The date column is </span>
+<span class="sd">    timezone-localized to UTC.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">    - The historical period for which data is retrieved is currently fixed within the function.</span>
+<span class="sd">    - The function assumes the existence of the &#39;openmeteo_requests&#39; custom module and </span>
+<span class="sd">      &#39;retry_requests&#39; for handling API requests.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1">#start_date = &#39;1950-11-15&#39;</span>
-    <span class="n">end_date</span> <span class="o">=</span> <span class="s1">&#39;2023-11-19&#39;</span>
-    <span class="n">daily_parameters</span> <span class="o">=</span> <span class="s1">&#39;temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,snowfall_sum,wind_speed_10m_max,wind_gusts_10m_max&#39;</span>
-    <span class="n">temperature_unit</span> <span class="o">=</span> <span class="s1">&#39;fahrenheit&#39;</span>
-    <span class="n">wind_speed_unit</span> <span class="o">=</span> <span class="s1">&#39;mph&#39;</span>
-    <span class="n">precipitation_unit</span> <span class="o">=</span> <span class="s1">&#39;inch&#39;</span>
-    <span class="n">timezone</span> <span class="o">=</span> <span class="s1">&#39;America/Denver&#39;</span>
-
-    <span class="c1"># Construct URL using f-string</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://archive-api.open-meteo.com/v1/archive?latitude=</span><span class="si">{</span><span class="n">lat</span><span class="si">}</span><span class="s2">&amp;longitude=</span><span class="si">{</span><span class="n">long</span><span class="si">}</span><span class="s2">&amp;start_date=</span><span class="si">{</span><span class="n">start_date</span><span class="si">}</span><span class="s2">&amp;end_date=</span><span class="si">{</span><span class="n">end_date</span><span class="si">}</span><span class="s2">&amp;daily=</span><span class="si">{</span><span class="n">daily_parameters</span><span class="si">}</span><span class="s2">&amp;temperature_unit=</span><span class="si">{</span><span class="n">temperature_unit</span><span class="si">}</span><span class="s2">&amp;wind_speed_unit=</span><span class="si">{</span><span class="n">wind_speed_unit</span><span class="si">}</span><span class="s2">&amp;precipitation_unit=</span><span class="si">{</span><span class="n">precipitation_unit</span><span class="si">}</span><span class="s2">&amp;timezone=</span><span class="si">{</span><span class="n">timezone</span><span class="si">}</span><span class="s2">&quot;</span>
     
-    <span class="c1"># Request data</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="c1"># Setup the Open-Meteo API client with cache and retry on error</span>
+    <span class="n">cache_session</span> <span class="o">=</span> <span class="n">requests_cache</span><span class="o">.</span><span class="n">CachedSession</span><span class="p">(</span><span class="s1">&#39;.cache&#39;</span><span class="p">,</span> <span class="n">expire_after</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">retry_session</span> <span class="o">=</span> <span class="n">retry</span><span class="p">(</span><span class="n">cache_session</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">backoff_factor</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">openmeteo</span> <span class="o">=</span> <span class="n">openmeteo_requests</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">retry_session</span><span class="p">)</span>
 
-    <span class="c1">#df creation</span>
-    <span class="n">daily_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;daily&#39;</span><span class="p">]</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">daily_data</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">df</span></div>
+    <span class="c1"># Define the URL and parameters with the provided latitude and longitude</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://archive-api.open-meteo.com/v1/archive&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;latitude&quot;</span><span class="p">:</span> <span class="n">latitude</span><span class="p">,</span>
+        <span class="s2">&quot;longitude&quot;</span><span class="p">:</span> <span class="n">longitude</span><span class="p">,</span>
+        <span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="s2">&quot;1950-01-01&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;end_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2023-11-29&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;hourly&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;temperature_2m&quot;</span><span class="p">,</span> <span class="s2">&quot;relative_humidity_2m&quot;</span><span class="p">,</span> <span class="s2">&quot;dew_point_2m&quot;</span><span class="p">,</span> <span class="s2">&quot;precipitation&quot;</span><span class="p">,</span> <span class="s2">&quot;rain&quot;</span><span class="p">,</span> <span class="s2">&quot;snowfall&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_speed_10m&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;temperature_unit&quot;</span><span class="p">:</span> <span class="s2">&quot;fahrenheit&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;wind_speed_unit&quot;</span><span class="p">:</span> <span class="s2">&quot;mph&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;precipitation_unit&quot;</span><span class="p">:</span> <span class="s2">&quot;inch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;timezone&quot;</span><span class="p">:</span> <span class="s2">&quot;GMT&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">responses</span> <span class="o">=</span> <span class="n">openmeteo</span><span class="o">.</span><span class="n">weather_api</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="c1"># Process the response data</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">responses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">hourly</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">Hourly</span><span class="p">()</span>
+    <span class="n">hourly_temperature_2m</span> <span class="o">=</span> <span class="n">hourly</span><span class="o">.</span><span class="n">Variables</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">ValuesAsNumpy</span><span class="p">()</span>
+    <span class="n">hourly_relative_humidity_2m</span> <span class="o">=</span> <span class="n">hourly</span><span class="o">.</span><span class="n">Variables</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">ValuesAsNumpy</span><span class="p">()</span>
+    <span class="n">hourly_dew_point_2m</span> <span class="o">=</span> <span class="n">hourly</span><span class="o">.</span><span class="n">Variables</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">ValuesAsNumpy</span><span class="p">()</span>
+    <span class="n">hourly_precipitation</span> <span class="o">=</span> <span class="n">hourly</span><span class="o">.</span><span class="n">Variables</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">ValuesAsNumpy</span><span class="p">()</span>
+    <span class="n">hourly_rain</span> <span class="o">=</span> <span class="n">hourly</span><span class="o">.</span><span class="n">Variables</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">ValuesAsNumpy</span><span class="p">()</span>
+    <span class="n">hourly_snowfall</span> <span class="o">=</span> <span class="n">hourly</span><span class="o">.</span><span class="n">Variables</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">ValuesAsNumpy</span><span class="p">()</span>
+    <span class="n">hourly_wind_speed_10m</span> <span class="o">=</span> <span class="n">hourly</span><span class="o">.</span><span class="n">Variables</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">ValuesAsNumpy</span><span class="p">()</span>
+
+    <span class="n">hourly_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span>
+        <span class="n">start</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">hourly</span><span class="o">.</span><span class="n">Time</span><span class="p">(),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">),</span>
+        <span class="n">end</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">hourly</span><span class="o">.</span><span class="n">TimeEnd</span><span class="p">(),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">),</span>
+        <span class="n">freq</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">hourly</span><span class="o">.</span><span class="n">Interval</span><span class="p">()),</span>
+        <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;left&quot;</span>
+    <span class="p">)}</span>
+    <span class="n">hourly_data</span><span class="p">[</span><span class="s2">&quot;temperature_2m&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hourly_temperature_2m</span>
+    <span class="n">hourly_data</span><span class="p">[</span><span class="s2">&quot;relative_humidity_2m&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hourly_relative_humidity_2m</span>
+    <span class="n">hourly_data</span><span class="p">[</span><span class="s2">&quot;dew_point_2m&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hourly_dew_point_2m</span>
+    <span class="n">hourly_data</span><span class="p">[</span><span class="s2">&quot;precipitation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hourly_precipitation</span>
+    <span class="n">hourly_data</span><span class="p">[</span><span class="s2">&quot;rain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hourly_rain</span>
+    <span class="n">hourly_data</span><span class="p">[</span><span class="s2">&quot;snowfall&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hourly_snowfall</span>
+    <span class="n">hourly_data</span><span class="p">[</span><span class="s2">&quot;wind_speed_10m&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hourly_wind_speed_10m</span>
+
+    <span class="n">hourly_dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">hourly_data</span><span class="p">)</span>
+    <span class="n">hourly_dataframe</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hourly_dataframe</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hourly_dataframe</span></div>
 
 
+<span class="c1"># Example usage</span>
+<span class="c1"># latitude = 40.8</span>
+<span class="c1"># longitude = -111.8</span>
+<span class="c1"># historical_data = get_history(latitude, longitude)</span>
 </pre></div>
 
             <div class="clearer"></div>

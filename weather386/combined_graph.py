@@ -29,6 +29,7 @@ def combined_graph(historical_df,forecast_df):
     This function relies on the 'weather386' module's specific graphing functions. It assumes 
     these functions are correctly implemented and available.
     """
+    
     fig, axs = plt.subplots(3,1, figsize=(15,10))
     precip_graph(axs[0], historical_df, forecast_df)
     temp_graph(axs[1], historical_df, forecast_df)
