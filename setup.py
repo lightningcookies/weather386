@@ -10,6 +10,11 @@ setup(
         'openmeteo_sdk==1.7.0',
         'pandas==1.5.3',
         'requests==2.28.2',
+        'matplotlib==3.7.1',
+        'seaborn==0.13.0',
+        'python-dateutil==2.8.2',
+        'requests_cache==1.1.1',
+        'retry_requests==2.0.0'
     ],
     author='Cameron Slaugh, Taylor Davis',
     author_email='cmslaugh@student.byu.edu, tpd25@student.byu.edu',
