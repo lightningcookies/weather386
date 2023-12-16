@@ -12,15 +12,17 @@ def join_clean(df_dict):
 
     Parameters:
     df_dict (dict): A dictionary where keys are strings representing the type of weather data 
-                    (e.g., 'temperature', 'dewpoint', 'maxTemperature', 'minTemperature') and values 
+                    (e.g., 'temperature', 'dewpoint', 'precipitation', 'windSpeed') and values 
                     are pandas DataFrames containing the corresponding data.
 
     Returns:
     pandas.DataFrame: A combined DataFrame with each weather data type as a column, aligned by the
                       'validTime' column. Temperature and dewpoint values are converted to Fahrenheit.
+                      precipitation is converted from mm to in.
 
     Each DataFrame in the input dictionary is first expanded using the `expand_df` function. Then, for
-    DataFrames representing temperature or dewpoint, values are converted from Celsius to Fahrenheit.
+    DataFrames representing temperature or dewpoint, values are converted from Celsius to Fahrenheit. Then,
+    for the precipitation DataFrame, values are converted to inches from millimeters.
     The DataFrames are then merged into a single DataFrame on the 'validTime' column. If the 'validTime'
     column does not exist in any of the DataFrames, the merge may not align the data correctly.
     """
@@ -32,6 +34,9 @@ def join_clean(df_dict):
         # Convert the 'value' column to Fahrenheit for temperature and dewpoint
         if key == 'temperature' or key == 'dewpoint' or key == 'maxTemperature' or key == 'minTemperature':
             expanded_df['value'] = expanded_df['value'] * 9/5 + 32
+        
+        if key == 'precipitation':
+            expanded_df['value'] = expanded_df['value'] / 25.4
 
         expanded_df = expanded_df.rename(columns={'value': key})
 

@@ -45,8 +45,7 @@ def precip_graph(ax, historical_df, forecast_df):
 
     # Plotting
     sns.lineplot(x='day_hour', y='precipitation', data=forecast_df, errorbar=None, label='Forecast Precipitation', ax=ax)
-    # ommitted because it is often very unhelpful
-    #sns.lineplot(x='day_hour', y='precipitation', data=historical_df, errorbar='sd', label='Historical Average Precipitation', ax=ax)
+    sns.lineplot(x='day_hour', y='precipitation', data=historical_df, errorbar='sd', label='Historical Average Precipitation', ax=ax)
 
     # Customize the plot
     ax.set_xlabel('Month-Day-Hour UTC time-zone')
