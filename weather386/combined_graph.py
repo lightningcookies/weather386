@@ -15,8 +15,8 @@ def combined_graph(historical_df,forecast_df):
 
     Parameters:
     historical_df (pandas.DataFrame): A DataFrame containing historical weather data.
-                                      Required columns vary based on the specific needs of the
-                                      precip_graph, temp_graph, and wind_graph functions.
+                                      Required columns include 'precipitation', 'windSpeed',
+                                      and 'temperature'.
     forecast_df (pandas.DataFrame): A DataFrame containing forecasted weather data.
                                     Required columns are the same as for historical_df.
 

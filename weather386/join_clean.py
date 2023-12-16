@@ -31,7 +31,6 @@ def join_clean(df_dict):
         # Expand each dataframe
         expanded_df = pd.concat([expand_df(row) for _, row in df.iterrows()], ignore_index=True)
 
-        # Convert the 'value' column to Fahrenheit for temperature and dewpoint
         if key == 'temperature' or key == 'dewpoint' or key == 'maxTemperature' or key == 'minTemperature':
             expanded_df['value'] = expanded_df['value'] * 9/5 + 32
         

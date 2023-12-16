@@ -77,15 +77,17 @@
 
 <span class="sd">    Parameters:</span>
 <span class="sd">    df_dict (dict): A dictionary where keys are strings representing the type of weather data </span>
-<span class="sd">                    (e.g., &#39;temperature&#39;, &#39;dewpoint&#39;, &#39;maxTemperature&#39;, &#39;minTemperature&#39;) and values </span>
+<span class="sd">                    (e.g., &#39;temperature&#39;, &#39;dewpoint&#39;, &#39;precipitation&#39;, &#39;windSpeed&#39;) and values </span>
 <span class="sd">                    are pandas DataFrames containing the corresponding data.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">    pandas.DataFrame: A combined DataFrame with each weather data type as a column, aligned by the</span>
 <span class="sd">                      &#39;validTime&#39; column. Temperature and dewpoint values are converted to Fahrenheit.</span>
+<span class="sd">                      precipitation is converted from mm to in.</span>
 
 <span class="sd">    Each DataFrame in the input dictionary is first expanded using the `expand_df` function. Then, for</span>
-<span class="sd">    DataFrames representing temperature or dewpoint, values are converted from Celsius to Fahrenheit.</span>
+<span class="sd">    DataFrames representing temperature or dewpoint, values are converted from Celsius to Fahrenheit. Then,</span>
+<span class="sd">    for the precipitation DataFrame, values are converted to inches from millimeters.</span>
 <span class="sd">    The DataFrames are then merged into a single DataFrame on the &#39;validTime&#39; column. If the &#39;validTime&#39;</span>
 <span class="sd">    column does not exist in any of the DataFrames, the merge may not align the data correctly.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -94,9 +96,11 @@
         <span class="c1"># Expand each dataframe</span>
         <span class="n">expanded_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">expand_df</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># Convert the &#39;value&#39; column to Fahrenheit for temperature and dewpoint</span>
         <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;temperature&#39;</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;dewpoint&#39;</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;maxTemperature&#39;</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;minTemperature&#39;</span><span class="p">:</span>
             <span class="n">expanded_df</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">expanded_df</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">9</span><span class="o">/</span><span class="mi">5</span> <span class="o">+</span> <span class="mi">32</span>
+        
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;precipitation&#39;</span><span class="p">:</span>
+            <span class="n">expanded_df</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">expanded_df</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">25.4</span>
 
         <span class="n">expanded_df</span> <span class="o">=</span> <span class="n">expanded_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">})</span>
 

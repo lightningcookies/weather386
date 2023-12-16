@@ -69,13 +69,24 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="weather386.forecast.get_forecast">
 <span class="sig-prename descclassname"><span class="pre">weather386.forecast.</span></span><span class="sig-name descname"><span class="pre">get_forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/weather386/forecast.html#get_forecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#weather386.forecast.get_forecast" title="Link to this definition">¶</a></dt>
-<dd><p>Fetch forecast based on latitude and longitude from the NWS and returns
-it as a pandas DataFrame.</p>
+<dd><p>Retrieves weather forecast data for a specified latitude and longitude using the NWS API.</p>
+<p>This function sends a request to the National Weather Service (NWS) API and retrieves a variety
+of weather forecast data for the provided geographic coordinates. The data includes temperature,
+dewpoint, maximum and minimum temperatures, relative humidity, wind direction and speed,
+precipitation, and snowfall amounts. Each category of data is returned as a separate DataFrame
+within a dictionary.</p>
 <p>Parameters:
-lat (float): Latitude
-long (float): Longitude</p>
+lat (float): Latitude of the location for the weather forecast.
+long (float): Longitude of the location for the weather forecast.</p>
 <p>Returns:
-pd.DataFrame: DataFrame containing the fetched data</p>
+dict: A dictionary of pandas DataFrames, with keys representing different types of weather</p>
+<blockquote>
+<div><p>data (‘temperature’, ‘dewpoint’, ‘maxTemperature’, ‘minTemperature’, ‘relativeHumidity’,
+‘windDirection’, ‘windSpeed’, ‘precipitation’, ‘snowfall’). Each DataFrame contains
+the respective forecast data.</p>
+</div></blockquote>
+<p>If the API request is unsuccessful, the function returns an empty dictionary. It’s recommended
+to check the returned data for emptiness to handle any potential API request failures.</p>
 </dd></dl>
 
 <dl class="py function" id="module-weather386.history">
@@ -118,8 +129,8 @@ temperature, and wind speed. The function utilizes specific graphing functions f
 <p>Parameters:
 historical_df (pandas.DataFrame): A DataFrame containing historical weather data.</p>
 <blockquote>
-<div><p>Required columns vary based on the specific needs of the
-precip_graph, temp_graph, and wind_graph functions.</p>
+<div><p>Required columns include ‘precipitation’, ‘windSpeed’,
+and ‘temperature’.</p>
 </div></blockquote>
 <dl class="simple">
 <dt>forecast_df (pandas.DataFrame): A DataFrame containing forecasted weather data.</dt><dd><p>Required columns are the same as for historical_df.</p>
@@ -170,16 +181,18 @@ temperature values to Fahrenheit (where applicable), and then merges them on a c
 <p>Parameters:
 df_dict (dict): A dictionary where keys are strings representing the type of weather data</p>
 <blockquote>
-<div><p>(e.g., ‘temperature’, ‘dewpoint’, ‘maxTemperature’, ‘minTemperature’) and values
+<div><p>(e.g., ‘temperature’, ‘dewpoint’, ‘precipitation’, ‘windSpeed’) and values
 are pandas DataFrames containing the corresponding data.</p>
 </div></blockquote>
 <p>Returns:
 pandas.DataFrame: A combined DataFrame with each weather data type as a column, aligned by the</p>
 <blockquote>
-<div><p>‘validTime’ column. Temperature and dewpoint values are converted to Fahrenheit.</p>
+<div><p>‘validTime’ column. Temperature and dewpoint values are converted to Fahrenheit.
+precipitation is converted from mm to in.</p>
 </div></blockquote>
 <p>Each DataFrame in the input dictionary is first expanded using the <cite>expand_df</cite> function. Then, for
-DataFrames representing temperature or dewpoint, values are converted from Celsius to Fahrenheit.
+DataFrames representing temperature or dewpoint, values are converted from Celsius to Fahrenheit. Then,
+for the precipitation DataFrame, values are converted to inches from millimeters.
 The DataFrames are then merged into a single DataFrame on the ‘validTime’ column. If the ‘validTime’
 column does not exist in any of the DataFrames, the merge may not align the data correctly.</p>
 </dd></dl>

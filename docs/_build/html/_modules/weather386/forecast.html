@@ -68,15 +68,26 @@
 <a class="viewcode-back" href="../../index.html#weather386.forecast.get_forecast">[docs]</a>
 <span class="k">def</span> <span class="nf">get_forecast</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">long</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Fetch forecast based on latitude and longitude from the NWS and returns</span>
-<span class="sd">    it as a pandas DataFrame.</span>
+<span class="sd">    Retrieves weather forecast data for a specified latitude and longitude using the NWS API.</span>
+
+<span class="sd">    This function sends a request to the National Weather Service (NWS) API and retrieves a variety</span>
+<span class="sd">    of weather forecast data for the provided geographic coordinates. The data includes temperature,</span>
+<span class="sd">    dewpoint, maximum and minimum temperatures, relative humidity, wind direction and speed,</span>
+<span class="sd">    precipitation, and snowfall amounts. Each category of data is returned as a separate DataFrame</span>
+<span class="sd">    within a dictionary.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">    lat (float): Latitude</span>
-<span class="sd">    long (float): Longitude</span>
+<span class="sd">    lat (float): Latitude of the location for the weather forecast.</span>
+<span class="sd">    long (float): Longitude of the location for the weather forecast.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">    pd.DataFrame: DataFrame containing the fetched data</span>
+<span class="sd">    dict: A dictionary of pandas DataFrames, with keys representing different types of weather</span>
+<span class="sd">          data (&#39;temperature&#39;, &#39;dewpoint&#39;, &#39;maxTemperature&#39;, &#39;minTemperature&#39;, &#39;relativeHumidity&#39;,</span>
+<span class="sd">          &#39;windDirection&#39;, &#39;windSpeed&#39;, &#39;precipitation&#39;, &#39;snowfall&#39;). Each DataFrame contains</span>
+<span class="sd">          the respective forecast data.</span>
+
+<span class="sd">    If the API request is unsuccessful, the function returns an empty dictionary. It&#39;s recommended</span>
+<span class="sd">    to check the returned data for emptiness to handle any potential API request failures.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">api_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://api.weather.gov/points/</span><span class="si">{</span><span class="n">lat</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">long</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -103,17 +114,6 @@
         <span class="n">forecast_grid_precip</span> <span class="o">=</span> <span class="n">forecast_grid</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="s1">&#39;quantitativePrecipitation&#39;</span><span class="p">][</span><span class="s1">&#39;values&#39;</span><span class="p">]</span>
         <span class="n">forecast_grid_snowfallAmount</span> <span class="o">=</span> <span class="n">forecast_grid</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="s1">&#39;snowfallAmount&#39;</span><span class="p">][</span><span class="s1">&#39;values&#39;</span><span class="p">]</span>
 
-        <span class="c1"># Convert each one to a dataframe</span>
-        <span class="c1">#df_temp = pd.DataFrame(forecast_grid_temp)</span>
-        <span class="c1">#df_dewpoint = pd.DataFrame(forecast_grid_dewpoint)</span>
-        <span class="c1">#df_maxTemperature = pd.DataFrame(forecast_grid_maxTemperature)</span>
-        <span class="c1">#df_minTemperature = pd.DataFrame(forecast_grid_minTemperature)</span>
-        <span class="c1">#df_relativeHumidity = pd.DataFrame(forecast_grid_relativeHumidity)</span>
-        <span class="c1">#df_windDirection = pd.DataFrame(forecast_grid_windDirection)</span>
-        <span class="c1">#df_windSpeed = pd.DataFrame(forecast_grid_windSpeed)</span>
-        <span class="c1">#df_precip = pd.DataFrame(forecast_grid_precip)</span>
-        <span class="c1">#df_snowfall = pd.DataFrame(forecast_grid_snowfallAmount)</span>
-
         <span class="c1"># list of dataframes</span>
         <span class="n">dataframes</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">forecast_grid_temp</span><span class="p">),</span>
@@ -131,11 +131,6 @@
         <span class="c1"># Handle errors or return an empty DataFrame</span>
         <span class="k">return</span> <span class="p">{}</span></div>
 
-    
-
-
-<span class="c1">#df_dict = get_forecast(40.76,-111.876)</span>
-<span class="c1">#print(df_dict)</span>
 </pre></div>
 
             <div class="clearer"></div>

@@ -2,7 +2,7 @@
 
 
 # weather386
-`weather386` is a Python package developed as part of a data science class at Brigham Young University (BYU). It provides an easy-to-use interface for accessing and visualizing weather forecast and historical data. Built with simplicity in mind, it offers several functions that allow users to quickly retrieve and analyze weather data from sources like the National Weather Service. **all times are in UTC timezone as customary with weather data**
+`weather386` is a Python package developed as part of a data science class at Brigham Young University (BYU). It provides an easy-to-use interface for accessing and visualizing weather forecast and historical data. Built with simplicity in mind, it offers several functions that allow users to quickly retrieve and analyze weather data from the National Weather Service.   **all times are in UTC timezone as customary with weather data**
 
 ## Website
 https://lightningcookies.github.io/weather386/
@@ -12,7 +12,7 @@ https://lightningcookies.github.io/weather386/
 To install `weather386`, you can use pip:
 
 ```bash
-pip install weather386
+pip install git+https://github.com/lightningcookies/weather386.git
 ```
 
 ## Usage example
