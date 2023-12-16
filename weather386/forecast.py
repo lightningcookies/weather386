@@ -1,12 +1,10 @@
-
 import requests
 import pandas as pd
 
-
-
 def get_forecast(lat, long):
     """
-    Fetch forecast based on latitude and longitude and return it as a pandas DataFrame.
+    Fetch forecast based on latitude and longitude from the NWS and returns
+    it as a pandas DataFrame.
 
     Parameters:
     lat (float): Latitude

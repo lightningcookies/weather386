@@ -57,8 +57,11 @@ hourly_data["snowfall"] = hourly_snowfall
 hourly_data["wind_speed_10m"] = hourly_wind_speed_10m
 
 hourly_dataframe = pd.DataFrame(data = hourly_data)
-all_column_types = hourly_dataframe.dtypes
-print(all_column_types)
+hourly_dataframe['date'] = hourly_dataframe['date'].dt.tz_localize('UTC')
 
-hourly_dataframe.to_pickle('hourly_hist.pkl')
+
+#all_column_types = hourly_dataframe.dtypes
+#print(all_column_types)
+
+#hourly_dataframe.to_pickle('hourly_hist.pkl')
 #print(hourly_dataframe)

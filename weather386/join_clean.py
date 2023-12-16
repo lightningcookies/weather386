@@ -1,9 +1,29 @@
 import pandas as pd
 import numpy as np
-from forecast import get_forecast
-from expand import expand_df
+from weather386.expand import expand_df
 
 def join_clean(df_dict):
+    """
+    Joins and cleans multiple weather data DataFrames.
+
+    This function takes a dictionary of DataFrames, each representing a different type of weather data,
+    and combines them into a single DataFrame. It performs expansion of each DataFrame, conversion of
+    temperature values to Fahrenheit (where applicable), and then merges them on a common time column.
+
+    Parameters:
+    df_dict (dict): A dictionary where keys are strings representing the type of weather data 
+                    (e.g., 'temperature', 'dewpoint', 'maxTemperature', 'minTemperature') and values 
+                    are pandas DataFrames containing the corresponding data.
+
+    Returns:
+    pandas.DataFrame: A combined DataFrame with each weather data type as a column, aligned by the
+                      'validTime' column. Temperature and dewpoint values are converted to Fahrenheit.
+
+    Each DataFrame in the input dictionary is first expanded using the `expand_df` function. Then, for
+    DataFrames representing temperature or dewpoint, values are converted from Celsius to Fahrenheit.
+    The DataFrames are then merged into a single DataFrame on the 'validTime' column. If the 'validTime'
+    column does not exist in any of the DataFrames, the merge may not align the data correctly.
+    """
     combined_df = None 
     for key, df in df_dict.items():
         # Expand each dataframe
@@ -20,11 +40,3 @@ def join_clean(df_dict):
         else:
             combined_df = pd.merge(combined_df, expanded_df, on='validTime', how='outer')
     return combined_df
-
-
-x = get_forecast(40.76, -111.876)
-combined_df = join_clean(x)
-print(combined_df)
-combined_df.to_pickle('combined.pkl')
-
-
