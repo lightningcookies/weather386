@@ -25,6 +25,6 @@ def join_clean(df_dict):
 x = get_forecast(40.76, -111.876)
 combined_df = join_clean(x)
 print(combined_df)
-combined_df.to_csv('combined.csv')
+combined_df.to_pickle('combined.pkl')
 
 

@@ -47,4 +47,6 @@ def get_history(lat,long,start_date):
     return df
 
 history_df = get_history(40.76,-111.876,'1950-11-15')
-history_df.to_csv('history_slc.csv')
+all_column_types = history_df.dtypes
+print(all_column_types)
+#history_df.to_pickle('history_slc.pkl')
